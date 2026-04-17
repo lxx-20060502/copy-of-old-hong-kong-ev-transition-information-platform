@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Vehicle Market Statistics | Hong Kong's EV Transition Information Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="client-subpage-dark-nav client-vehicle-experience-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="products.html" class="nav-link">Product</a>
+        <a href="client.html" class="nav-link active">Client</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="client-subpage-stage">
+    <div class="client-subpage-bg client-vehicle-bg" aria-hidden="true"></div>
+    <div class="client-subpage-overlay" aria-hidden="true"></div>
+
+    <aside class="client-side-menu" aria-label="Vehicle Market Client Menu">
+      <button class="client-side-item active" type="button" data-view="intro">View Asset Introduction</button>
+      <button class="client-side-item" type="button" data-view="contracts">View Contracts</button>
+      <button class="client-side-item" type="button" data-view="access">Access Asset</button>
+    </aside>
+
+    <section class="client-stage-main">
+      <div class="client-stage-content" id="clientContent"></div>
+    </section>
+  </main>
+
+  <script>
+    window.clientPageConfig = {
+      pageKey: 'vehicle',
+      introTitle: 'Vehicle Market Statistics',
+      introHtml: `<p>Vehicle Market Statistics is a curated data asset built from official Hong Kong Transport Department vehicle registration data. It delivers monthly market intelligence on vehicle registration activity, including fuel-type segmentation with a clear view of electric vehicle adoption trends over time.</p><p>For business users, the asset supports market assessment, demand forecasting, portfolio planning, and investment evaluation. It enables manufacturers, charging service providers, mobility platforms, and other industry participants to base strategic decisions on credible public-sector data and to identify emerging opportunities in Hong Kong’s evolving vehicle market.</p>`,
+      contractTitleHtml: 'Contract Terms<br>for Vehicle Market Statistics',
+      contractHtml: `<h3>Permitted Use</h3><p>The Vehicle Market Statistics asset is provided by the Transport Department to the EV Manufacturer for internal business use only. Permitted use includes market analysis, competitiveness assessment, demand forecasting, business planning, and internal reporting. The data may be used only within the Consumer’s organization for these purposes.</p><h3>Restrictions</h3><p>The Consumer shall not sell, sublicense, redistribute, publish, disclose, or transfer the data to any third party in raw form or in a form that allows the dataset to be reconstructed. The asset shall not be used for public distribution, external resale, or data brokerage. Access must be limited to authorized personnel only.</p><h3>Retention</h3><p>The Consumer may retain the raw data for up to thirty (30) days from receipt. After that period, all raw files and stored copies must be permanently deleted from the Consumer’s systems and storage environments. The Consumer shall not maintain a permanent archive of the raw dataset.</p><h3>Compliance</h3><p>By accessing or using the asset, the Consumer accepts these terms. The Consumer is responsible for ensuring compliance with the use, access, and retention requirements stated above.</p>`,
+      authorizeStartPath: '/api/client-transaction-a/start',
+      jobPrefix: '/api/client-transaction-a/jobs/',
+      resultHeading: 'Authorized Market View',
+      resultOpenLabel: 'Open Authorized Result',
+      resultTip: 'This controlled result remains subject to the displayed contract terms.',
+      allowExport: true,
+      exportLabel: 'Export Permitted Copy',
+      closeLabel: 'Close Session',
+      badges: ['Internal use only', 'No redistribution', '30-day retention shown in UI'],
+      authDisplay: { membership: 'Membership verified', manufacturer_role: 'Manufacturer role verified' },
+      startConfig: {
+        catalog_url: 'http://127.0.0.1:28081/api/mgmt/v3/catalog/request',
+        negotiation_url: 'http://127.0.0.1:28081/api/mgmt/v3/contractnegotiations',
+        transfer_url: 'http://127.0.0.1:28081/api/mgmt/v3/transferprocesses',
+        transfer_query_url: 'http://127.0.0.1:28081/api/mgmt/v3/transferprocesses/request',
+        edr_base_url: 'http://127.0.0.1:28081/api/mgmt/v3/edrs',
+        asset_id: 'asset-1-td-real',
+        counter_party_address: 'http://controlplane.provider.svc.cluster.local:8082/api/dsp/2025-1',
+        counter_party_id: 'did:web:identityhub.provider.svc.cluster.local%3A7083:provider',
+        protocol: 'dataspace-protocol-http:2025-1',
+        manufacturer_constraint_right: 'non_critical',
+        x_api_key: '',
+        final_public_url: 'http://127.0.0.1:11002/api/public'
+      }
+    };
+  </script>
+  <script src="client-subpage.js"></script>
+</body>
+</html>

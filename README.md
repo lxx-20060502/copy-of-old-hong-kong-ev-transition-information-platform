@@ -1,2 +1,2 @@
-# hong-kong-ev-transition-information-platform-
-CSC4240 project
+# Final-Project---CSC4240
+CSC4240 Project Demonstration Website

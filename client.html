@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Client | Hong Kong's EV Transition Information Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="client-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="products.html" class="nav-link">Product</a>
+        <a href="client.html" class="nav-link active">Client</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="client-main">
+    <section class="client-hero">
+      <div class="client-hero-bg" aria-hidden="true"></div>
+      <div class="client-hero-overlay"></div>
+      <div class="client-hero-content">
+        <h1>Client Interface</h1>
+        <div class="client-link-list">
+          <a href="client-vehicle-market.html" class="client-entry">For Vehicle Market Statistics</a>
+          <a href="client-charging-network.html" class="client-entry">For EV-Charging Network</a>
+        </div>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true"><span></span></div>
+    </section>
+
+    <section class="client-description-section">
+      <div class="content-wrap client-copy">
+        <p>The Client Interface is the user-facing entry point of the system. It is designed to present dataspace services in a clearer and more accessible way, so users can understand what a data product is, what it can provide, and how they can request it without dealing directly with technical responses or backend fields.</p>
+
+        <p>In this page, the main function is to turn complex backend operations into a simple frontend experience. Users can browse available services, read concise descriptions of assets, start a request, and follow the progress of the process through visible status updates such as discovery, agreement initiation, transfer, and delivery. The page focuses on readable actions and understandable results instead of raw API outputs.</p>
+
+        <p>The interaction method is different from a technical demo page. Users do not manually trigger each protocol step or inspect detailed returned payloads. Instead, they interact through straightforward buttons and guided status feedback. Once a request is started, the system handles the workflow in the background and only exposes the information that is meaningful to the user, such as current stage, service details, policy summary, and final controlled result.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

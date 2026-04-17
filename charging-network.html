@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get E-Vehicle Charging Network | HK EV Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="charging-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="products.html" class="nav-link active">Product</a>
+        <a href="client.html" class="nav-link">Client</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="vehicle-main">
+    <section class="vehicle-hero charging-hero">
+      <div class="vehicle-bg charging-bg"></div>
+      <div class="vehicle-overlay"></div>
+
+      <section class="market-console" id="transactionConsole">
+        <div class="console-column workflow-column">
+          <div class="column-header">
+            <span class="column-label">Transaction B</span>
+            <h1>Workflow</h1>
+          </div>
+          <div class="workflow-list" id="workflowList"></div>
+        </div>
+
+        <div class="console-column control-column">
+          <section class="control-card progress-card">
+            <div class="card-head">
+              <h2>1. Step Progress and Animation</h2>
+              <button class="run-button" id="runTransactionButton" type="button">Run Transaction B</button>
+            </div>
+            <div class="progress-count" id="progressCount">0/8</div>
+            <p class="step-caption" id="stepCaption">Ready to execute the full dataspace workflow for the charging network asset.</p>
+          </section>
+
+          <section class="control-card explanation-card">
+            <div class="card-head compact"><h2>2. Explanation</h2></div>
+            <div class="scroll-frame explanation-frame" id="explanationText">
+              The page is waiting for you to start the workflow. Once the run begins, this panel explains what the system is doing in plain language at each stage.
+            </div>
+          </section>
+
+          <section class="control-card input-card">
+            <div class="card-head compact"><h2>3. Prefilled Inputs</h2></div>
+            <form class="config-grid" id="transactionForm">
+              <label>
+                <span>Catalog URL</span>
+                <input name="catalog_url" value="http://127.0.0.1:28081/api/mgmt/v3/catalog/request" />
+              </label>
+              <label>
+                <span>Negotiation URL</span>
+                <input name="negotiation_url" value="http://127.0.0.1:28081/api/mgmt/v3/contractnegotiations" />
+              </label>
+              <label>
+                <span>Transfer URL</span>
+                <input name="transfer_url" value="http://127.0.0.1:28081/api/mgmt/v3/transferprocesses" />
+              </label>
+              <label>
+                <span>Transfer Query URL</span>
+                <input name="transfer_query_url" value="http://127.0.0.1:28081/api/mgmt/v3/transferprocesses/request" />
+              </label>
+              <label>
+                <span>EDR Base URL</span>
+                <input name="edr_base_url" value="http://127.0.0.1:28081/api/mgmt/v3/edrs" />
+              </label>
+              <label>
+                <span>Asset ID</span>
+                <input name="asset_id" value="epd-real-asset-geojson" />
+              </label>
+              <label>
+                <span>Counter Party Address</span>
+                <input name="counter_party_address" value="http://controlplane.provider.svc.cluster.local:8082/api/dsp/2025-1" />
+              </label>
+              <label>
+                <span>Counter Party DID</span>
+                <input name="counter_party_id" value="did:web:identityhub.provider.svc.cluster.local%3A7083:provider" />
+              </label>
+              <label>
+                <span>Protocol</span>
+                <input name="protocol" value="dataspace-protocol-http:2025-1" />
+              </label>
+              <label>
+                <span>Membership Constraint</span>
+                <input name="constraint_right" value="active" />
+              </label>
+              <label>
+                <span>x-api-key (optional)</span>
+                <input name="x_api_key" value="" placeholder="Leave blank if not required" />
+              </label>
+              <label>
+                <span>Public Pull URL (optional)</span>
+                <input name="final_public_url" value="http://127.0.0.1:11002/api/public" placeholder="Defaults to the EDR endpoint" />
+              </label>
+            </form>
+          </section>
+
+          <section class="control-card error-card">
+            <div class="card-head compact"><h2>4. Error Message</h2></div>
+            <div class="scroll-frame error-frame" id="errorText">No errors yet.</div>
+          </section>
+        </div>
+
+        <div class="console-column response-column">
+          <div class="column-header">
+            <span class="column-label">Live Responses</span>
+            <h1>Postman Output</h1>
+          </div>
+          <div class="response-stream" id="responseStream"></div>
+        </div>
+      </section>
+
+      <div class="console-status-strip">
+        <div class="connection-chip" id="connectionChip">Backend status: checking…</div>
+      </div>
+
+      <section class="usage-guide">
+        <h2>How to Use This Page</h2>
+        <ol>
+          <li>Keep your local EDC environment running first so the provider, consumer, and dataplane endpoints remain reachable in the background.</li>
+          <li>Start the local Python backend included in this package. The live workflow on this page talks to that backend instead of relying on Postman directly.</li>
+          <li>Review the prefilled inputs before running. You only need to adjust them if your local ports, URLs, or asset identifiers are different from the current setup.</li>
+          <li>Click <strong>Run Transaction B</strong>. The workflow column will update in real time while the explanation card describes each governed step.</li>
+          <li>The right-side response panel shows the actual request and response payloads returned from your live environment. Long JSON blocks can be scrolled inside that panel without changing the workbench layout.</li>
+          <li>If anything fails, the error card will show the latest backend message so you can restart the dataspace services or recalibrate the live parameters later.</li>
+        </ol>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    window.transactionPageConfig = {
+      transactionName: 'Transaction B',
+      apiBase: '/api/transaction-b',
+      initialStepCaption: 'Ready to execute the full dataspace workflow for the charging network asset.',
+      successStepCaption: 'Transaction B finished successfully. The charging network asset has been pulled from the live environment.',
+      idleResponseText: 'When you run Transaction B, each live request and response will appear here in a Postman format.',
+      steps: [
+        { key: 'discover', title: 'Discover Asset', note: 'Query the federated catalog for Asset 2.' },
+        { key: 'select_offer', title: 'Select Offer', note: 'Match the membership policy from the catalog.' },
+        { key: 'negotiate', title: 'Initiate Negotiation', note: 'Send the contract request to the provider.' },
+        { key: 'wait_negotiation', title: 'Await Agreement', note: 'Poll until the negotiation is finalized.' },
+        { key: 'transfer', title: 'Initiate Transfer', note: 'Start the transfer process for the agreed asset.' },
+        { key: 'wait_transfer', title: 'Await Data Plane', note: 'Poll until the transfer process is started.' },
+        { key: 'get_edr', title: 'Get EDR', note: 'Retrieve the data address and authorization token.' },
+        { key: 'download', title: 'Download Asset 2', note: 'Pull the charging network payload.' }
+      ]
+    };
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

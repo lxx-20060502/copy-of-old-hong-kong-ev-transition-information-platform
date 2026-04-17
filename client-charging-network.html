@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For EV-Charging Network | Hong Kong's EV Transition Information Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="client-subpage-dark-nav client-charging-experience-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="products.html" class="nav-link">Product</a>
+        <a href="client.html" class="nav-link active">Client</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="client-subpage-stage">
+    <div class="client-subpage-bg client-charging-bg" aria-hidden="true"></div>
+    <div class="client-subpage-overlay" aria-hidden="true"></div>
+
+    <aside class="client-side-menu" aria-label="Charging Network Client Menu">
+      <button class="client-side-item active" type="button" data-view="intro">View Asset Introduction</button>
+      <button class="client-side-item" type="button" data-view="contracts">View Contracts</button>
+      <button class="client-side-item" type="button" data-view="access">Access Asset</button>
+    </aside>
+
+    <section class="client-stage-main">
+      <div class="client-stage-content" id="clientContent"></div>
+    </section>
+  </main>
+
+  <script>
+    window.clientPageConfig = {
+      pageKey: 'charging',
+      introTitle: 'EV-Charging Network',
+      introHtml: `<p>The EV-Charging Network asset provides location and operational information for public EV chargers across Hong Kong. Supplied by the Environmental Protection Department and based on official government open data, it includes charger locations, real-time availability, connector types, and operator details.</p><p>For commercial users, this asset supports route planning, charger discovery, service integration, and location-based product development. It enables mobility platforms and digital service providers to deliver more reliable charging guidance and improve the overall EV user experience.</p>`,
+      contractTitleHtml: 'Contract Terms<br>for EV-Charging Network',
+      contractHtml: `<h3>Permitted Use</h3><p>The EV-Charging Network asset is provided by the Environmental Protection Department to the Map Service Provider for internal processing and customer-facing navigation services. Permitted use includes charger discovery, route planning, availability display, service integration, and operational support for digital mobility products.</p><h3>Restrictions</h3><p>The Consumer shall not redistribute, resell, sublicense, publish, or expose the raw operational dataset to any third party in a form that allows the underlying data to be copied, reconstructed, or retained independently of the authorized service environment. Access must be limited to authorized systems and personnel only.</p><h3>Retention</h3><p>The Consumer shall not cache or retain the operational data for more than five (5) minutes from the time of receipt, unless a shorter refresh cycle is technically required by the service. Any temporary copies created for processing, delivery, or display must be automatically replaced or deleted once they are no longer current. The Consumer shall not maintain a long-term archive of real-time status data.</p><h3>Compliance</h3><p>By accessing or using the asset, the Consumer accepts these terms. The Consumer is responsible for ensuring that all processing and storage activities remain compliant with applicable contractual requirements, including local data handling obligations where required. The Consumer must also provide clear source attribution to the Environmental Protection Department in any user-facing application or interface that displays the data.</p>`,
+      authorizeStartPath: '/api/client-transaction-b/start',
+      jobPrefix: '/api/client-transaction-b/jobs/',
+      resultHeading: 'Authorized Charging View',
+      resultOpenLabel: 'Open Authorized Result',
+      resultTip: 'This controlled view remains subject to the displayed contract terms.',
+      allowExport: false,
+      refreshLabel: 'Refresh Authorized View',
+      closeLabel: 'Close Session',
+      badges: ['View only', 'No redistribution', 'No stale caching', 'Source: HK Environmental Protection Department'],
+      authDisplay: { membership: 'Membership verified' },
+      startConfig: {
+        catalog_url: 'http://127.0.0.1:28081/api/mgmt/v3/catalog/request',
+        negotiation_url: 'http://127.0.0.1:28081/api/mgmt/v3/contractnegotiations',
+        transfer_url: 'http://127.0.0.1:28081/api/mgmt/v3/transferprocesses',
+        transfer_query_url: 'http://127.0.0.1:28081/api/mgmt/v3/transferprocesses/request',
+        edr_base_url: 'http://127.0.0.1:28081/api/mgmt/v3/edrs',
+        asset_id: 'epd-real-asset-geojson',
+        counter_party_address: 'http://controlplane.provider.svc.cluster.local:8082/api/dsp/2025-1',
+        counter_party_id: 'did:web:identityhub.provider.svc.cluster.local%3A7083:provider',
+        protocol: 'dataspace-protocol-http:2025-1',
+        constraint_right: 'active',
+        x_api_key: '',
+        final_public_url: 'http://127.0.0.1:11002/api/public'
+      }
+    };
+  </script>
+  <script src="client-subpage.js"></script>
+</body>
+</html>

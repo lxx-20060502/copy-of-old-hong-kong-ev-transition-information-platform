@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | Hong Kong's EV Transition Information Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="about-grid-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="about.html" class="nav-link active">About</a>
+        <a href="products.html" class="nav-link">Product</a>
+        <a href="client.html" class="nav-link">Client</a>
+      </div>
+    </nav>
+  </header>
+  <main class="about-grid-main">
+    <section class="about-grid">
+      <article class="about-tile"><div class="about-tile-bg about-tile-bg-introduction" aria-hidden="true"></div><div class="about-tile-overlay"></div><a class="about-tile-link" href="about-introduction.html">Introduction</a></article>
+      <article class="about-tile"><div class="about-tile-bg about-tile-bg-value" aria-hidden="true"></div><div class="about-tile-overlay"></div><a class="about-tile-link" href="about-value.html">Value</a></article>
+      <article class="about-tile"><div class="about-tile-bg about-tile-bg-applications" aria-hidden="true"></div><div class="about-tile-overlay"></div><a class="about-tile-link" href="about-applications.html">Applications</a></article>
+      <article class="about-tile"><div class="about-tile-bg about-tile-bg-challenges" aria-hidden="true"></div><div class="about-tile-overlay"></div><a class="about-tile-link" href="about-challenges.html">Challenges</a></article>
+    </section>
+
+    <section class="content-section about-scroll-section">
+      <div class="content-wrap about-scroll-wrap">
+        <div class="intro-block about-scroll-block">
+          <h2></h2>
+
+          <div class="intro-group">
+            <h3>Motivation</h3>
+            <p>As Hong Kong continues its transition toward electric mobility, the ability to turn dispersed public data into practical business value is becoming increasingly important. However, EV-related data is often held by different departments with different responsibilities, which creates barriers to timely, coordinated, and policy-compliant data use. This creates a clear need for a framework that can support cross-party collaboration while preserving control, accountability, and trust. Our motivation is therefore to explore how such data can be made more usable for commercial innovation and service improvement, while still respecting the governance expectations of public-sector data providers.</p>
+          </div>
+
+          <div class="intro-group">
+            <h3>Technology</h3>
+            <p>This project is built on a dataspace architecture inspired by Minimum Viable Dataspace principles. It uses Eclipse Dataspace Components (EDC) to support federated discovery, decentralized identity, contract-based data exchange, and policy enforcement. Real Hong Kong government open data is used as the foundation for the assets, while Docker, Kubernetes, Terraform, and Postman are used for deployment, configuration, orchestration, and end-to-end validation of the full data-sharing workflow.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

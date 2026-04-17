@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hong Kong's EV Transition Information Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="home-page">
+  <header class="site-header">
+    <nav class="nav-shell">
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="products.html" class="nav-link">Product</a>
+        <a href="client.html" class="nav-link">Client</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section" id="top">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1>Hong Kong's EV Transition Information Platform</h1>
+        <p class="hero-subtitle">CSC4240 Project Demonstration</p>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true"><span></span></div>
+    </section>
+
+    <section class="content-section">
+      <div class="content-wrap">
+        <div class="intro-block">
+          <h2>Project Overview</h2>
+
+          <div class="intro-group">
+            <h3>Vision</h3>
+            <p>We envision a smarter and more connected EV ecosystem in Hong Kong, where public-sector data can be discovered and used across organizations without sacrificing data ownership, trust, or governance. As electric mobility continues to grow, data should not remain isolated within departmental silos. Instead, it should support collaboration between government and industry in a secure, interoperable, and sovereignty-preserving way.</p>
+          </div>
+
+          <div class="intro-group">
+            <h3>Mission</h3>
+            <p>Our mission is to demonstrate how a federated dataspace can enable practical and governed data sharing for real EV-related use cases. In this project, the Transport Department and the Environmental Protection Department act as independent data providers, while an EV manufacturer and a map service provider act as data consumers. Through a Federated Catalog and policy-based access control, we create a realistic environment in which multiple parties can discover and exchange data under clear contractual terms.</p>
+          </div>
+
+          <div class="intro-group">
+            <h3>Goal</h3>
+            <p>The goal of this project is to solve three key challenges in Hong Kong’s EV data ecosystem: fragmented data access, limited cross-organizational interoperability, and weak control over data usage after sharing. By building a federated data-sharing architecture, we enable unified asset discovery, governed data exchange, and practical applications such as market analysis and real-time charging navigation. The project also shows how real public data can be turned into usable digital assets for cross-sector collaboration.</p>
+          </div>
+
+          <h2 class="section-heading-spacer">What Problem We Solve</h2>
+          <div class="intro-group intro-group-single-copy">
+            <p>Our project enables public EV-related data to create practical value across organizational boundaries. By establishing a federated and governed data-sharing environment, we allow businesses to discover relevant assets more efficiently, access them through controlled exchange processes, and apply them to real operational scenarios. This supports use cases such as market intelligence for EV manufacturers and charging navigation services for mobility platforms, while giving data providers clear control over access conditions and usage terms. In this way, the project transforms public data from static information resources into actionable business assets for innovation and service improvement.</p>
+          </div>
+        </div>
+
+        <div class="developer-section">
+          <button class="developer-button" id="developerButton" type="button">About Developers</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="developerModal" aria-hidden="true">
+    <div class="developer-card" role="dialog" aria-modal="true" aria-labelledby="developerTitle">
+      <div class="developer-card-header">
+        <h2 id="developerTitle">Developers</h2>
+        <button class="close-button" id="closeDeveloperModal" aria-label="Close">×</button>
+      </div>
+      <div class="developer-card-body">
+        <p>HUANG Xiang, 124090226</p>
+        <p>LYU Xiaoxiao, 124090445</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
