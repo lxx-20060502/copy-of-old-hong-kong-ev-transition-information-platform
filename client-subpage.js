@@ -8,6 +8,8 @@ let currentJobId = null;
 let currentJob = null;
 let pollTimer = null;
 let exportUrl = null;
+let chargingLeafletMap = null;
+let chargingLeafletPoints = [];
 
 function computeBackendOrigin() {
   const override = window.localStorage?.getItem('hkEvBackendOrigin')?.trim();
@@ -79,93 +81,51 @@ function injectMapPatchStyles() {
 
     .charging-map-board::before,
     .charging-map-board::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
+      display: none;
     }
 
-    .charging-map-board::before {
-      background:
-        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-      background-size: 88px 88px;
-      opacity: 0.55;
-    }
-
-    .charging-map-board::after {
-      background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.22) 100%);
-    }
-
-    .charging-map-svg {
+    #chargingLeafletMap {
       position: relative;
+      z-index: 1;
       width: 100%;
       height: 520px;
-      display: block;
-      z-index: 1;
     }
 
-    .charging-map-boundary {
-      fill: none;
-      stroke: rgba(186, 204, 232, 0.46);
-      stroke-width: 2;
-      stroke-dasharray: 10 8;
+    .leaflet-container {
+      width: 100%;
+      height: 100%;
+      background: rgba(7, 12, 20, 0.36);
+      font: inherit;
     }
 
-    .charging-map-grid {
-      stroke: rgba(180, 196, 226, 0.12);
-      stroke-width: 1;
+    .leaflet-control-attribution {
+      background: rgba(9, 15, 26, 0.78) !important;
+      color: rgba(219, 227, 239, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
-    .charging-map-axis-label,
-    .charging-map-title,
-    .charging-map-corner-note {
-      fill: rgba(221, 229, 241, 0.88);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      letter-spacing: 0.02em;
+    .leaflet-control-attribution a {
+      color: rgba(141, 198, 255, 0.96);
     }
 
-    .charging-map-axis-label {
-      font-size: 13px;
-      fill: rgba(191, 203, 223, 0.78);
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: rgba(9, 15, 26, 0.94);
+      color: rgba(235, 240, 246, 0.95);
+      border: 1px solid rgba(147, 180, 226, 0.24);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .charging-map-title {
-      font-size: 20px;
-      font-weight: 600;
+    .leaflet-popup-content {
+      margin: 0.9rem 1rem;
+      line-height: 1.45;
     }
 
-    .charging-map-corner-note {
-      font-size: 12px;
-      fill: rgba(176, 190, 214, 0.68);
-    }
-
-    .charging-map-point {
-      fill: rgba(114, 178, 255, 0.92);
-      stroke: rgba(250, 253, 255, 0.95);
-      stroke-width: 1.4;
-      cursor: pointer;
-      transition: transform 0.15s ease, r 0.15s ease, fill 0.15s ease, opacity 0.15s ease;
-      transform-box: fill-box;
-      transform-origin: center;
-      opacity: 0.92;
-    }
-
-    .charging-map-point.is-active,
-    .charging-map-point:hover,
-    .charging-map-point:focus-visible {
-      fill: rgba(86, 237, 198, 0.98);
-      opacity: 1;
-      r: 8;
-      transform: scale(1.14);
-      outline: none;
-    }
-
-    .charging-map-ring {
-      fill: rgba(73, 196, 255, 0.12);
-      stroke: rgba(124, 196, 255, 0.28);
-      stroke-width: 1.1;
-      pointer-events: none;
+    .leaflet-popup-close-button {
+      display: none;
     }
 
     .charging-map-empty {
@@ -248,7 +208,7 @@ function injectMapPatchStyles() {
     }
 
     @media (max-width: 900px) {
-      .charging-map-svg {
+      #chargingLeafletMap {
         height: 460px;
       }
 
@@ -267,7 +227,7 @@ function injectMapPatchStyles() {
         align-items: flex-start;
       }
 
-      .charging-map-svg {
+      #chargingLeafletMap {
         height: 390px;
       }
 
@@ -838,60 +798,11 @@ function renderChargingMap(rows) {
   injectMapPatchStyles();
 
   const points = buildChargingPoints(rows);
+  chargingLeafletPoints = points;
+
   if (!points.length) {
     return `<div class="charging-map-empty">The authorized charging payload did not contain usable coordinate fields, so the controlled map view could not be drawn.</div>`;
   }
-
-  const width = 1000;
-  const height = 520;
-  const margin = { top: 56, right: 60, bottom: 54, left: 70 };
-  const bounds = getMapBounds(points);
-  const project = makeMapProjector(bounds, width, height, margin);
-
-  const gridLines = [];
-  const verticalSegments = 5;
-  const horizontalSegments = 4;
-  for (let i = 0; i <= verticalSegments; i += 1) {
-    const x = margin.left + ((width - margin.left - margin.right) / verticalSegments) * i;
-    gridLines.push(`<line class="charging-map-grid" x1="${x}" y1="${margin.top}" x2="${x}" y2="${height - margin.bottom}" />`);
-  }
-  for (let i = 0; i <= horizontalSegments; i += 1) {
-    const y = margin.top + ((height - margin.top - margin.bottom) / horizontalSegments) * i;
-    gridLines.push(`<line class="charging-map-grid" x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" />`);
-  }
-
-  const projectedPoints = points.map((point) => ({ ...point, ...project(point.longitude, point.latitude) }));
-
-  const rings = projectedPoints
-    .map(
-      (point) =>
-        `<circle class="charging-map-ring" cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="10"></circle>`,
-    )
-    .join('');
-
-  const pointNodes = projectedPoints
-    .map((point) => {
-      const tooltipTitle = escapeHtml(point.title);
-      const detailPayload = escapeHtml(JSON.stringify(point.details));
-
-      return `
-        <circle
-          class="charging-map-point"
-          cx="${point.x.toFixed(2)}"
-          cy="${point.y.toFixed(2)}"
-          r="6.2"
-          tabindex="0"
-          role="button"
-          aria-label="${tooltipTitle}"
-          data-point-id="${point.id}"
-          data-title="${tooltipTitle}"
-          data-longitude="${formatCoordinate(point.longitude)}"
-          data-latitude="${formatCoordinate(point.latitude)}"
-          data-details-json="${detailPayload}"
-        ></circle>
-      `;
-    })
-    .join('');
 
   return `
     <section class="charging-map-shell" aria-label="Controlled charging map result">
@@ -900,19 +811,11 @@ function renderChargingMap(rows) {
         <div class="charging-map-legend"><span class="charging-map-legend-dot"></span><span>Authorized charging point</span></div>
       </div>
       <div class="charging-map-board" id="chargingMapBoard">
-        <svg class="charging-map-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" aria-label="Hong Kong charging network coordinate map">
-          <text class="charging-map-title" x="${margin.left}" y="28">Hong Kong EV-Charging Network</text>
-          <text class="charging-map-corner-note" x="${width - margin.right}" y="28" text-anchor="end">Controlled preview · Coordinate-based map</text>
-          ${gridLines.join('')}
-          <rect class="charging-map-boundary" x="${margin.left}" y="${margin.top}" width="${width - margin.left - margin.right}" height="${height - margin.top - margin.bottom}"></rect>
-          ${rings}
-          ${pointNodes}
-          <text class="charging-map-axis-label" x="${margin.left}" y="${height - 16}">Lon ${formatCoordinate(bounds.minLon)}</text>
-          <text class="charging-map-axis-label" x="${width - margin.right}" y="${height - 16}" text-anchor="end">Lon ${formatCoordinate(bounds.maxLon)}</text>
-          <text class="charging-map-axis-label" x="16" y="${height - margin.bottom}" transform="rotate(-90 16 ${height - margin.bottom})">Lat ${formatCoordinate(bounds.minLat)}</text>
-          <text class="charging-map-axis-label" x="16" y="${margin.top + 56}" transform="rotate(-90 16 ${margin.top + 56})">Lat ${formatCoordinate(bounds.maxLat)}</text>
-        </svg>
-        <div class="charging-map-tooltip" id="chargingMapTooltip" aria-hidden="true"></div>
+        <div
+          id="chargingLeafletMap"
+          aria-label="Hong Kong charging network map"
+          style="position: relative; z-index: 1; width: 100%; height: 520px;"
+        ></div>
       </div>
     </section>
   `;
@@ -1158,62 +1061,101 @@ function positionTooltip(board, tooltip, clientX, clientY) {
 
 function attachChargingMapInteractions() {
   const board = document.getElementById('chargingMapBoard');
-  const tooltip = document.getElementById('chargingMapTooltip');
-  if (!board || !tooltip) return;
+  const mapRoot = document.getElementById('chargingLeafletMap');
+  if (!board || !mapRoot) return;
 
-  const points = [...board.querySelectorAll('.charging-map-point')];
+  if (chargingLeafletMap) {
+    chargingLeafletMap.remove();
+    chargingLeafletMap = null;
+  }
 
-  const hideTooltip = () => {
-    tooltip.classList.remove('is-visible');
-    tooltip.setAttribute('aria-hidden', 'true');
-    points.forEach((point) => point.classList.remove('is-active'));
-  };
+  if (typeof window.L === 'undefined') {
+    mapRoot.innerHTML = `<div class="charging-map-empty">Leaflet failed to load, so the interactive map could not be displayed.</div>`;
+    return;
+  }
 
-  const showTooltip = (point, event) => {
-    points.forEach((node) => node.classList.toggle('is-active', node === point));
-    const title = point.dataset.title || 'Charging Point';
-    let parsedDetails = [];
-    try {
-      parsedDetails = JSON.parse(point.dataset.detailsJson || '[]');
-    } catch (error) {
-      parsedDetails = [];
-    }
-    const details = parsedDetails
+  const points = Array.isArray(chargingLeafletPoints) ? chargingLeafletPoints : [];
+  if (!points.length) {
+    mapRoot.innerHTML = `<div class="charging-map-empty">No valid charging points were available for the interactive map.</div>`;
+    return;
+  }
+
+  chargingLeafletMap = window.L.map(mapRoot, {
+    zoomControl: true,
+    scrollWheelZoom: true,
+    preferCanvas: true,
+  });
+
+  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(chargingLeafletMap);
+
+  const latLngs = [];
+
+  points.forEach((point) => {
+    const lat = Number(point.latitude);
+    const lon = Number(point.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+
+    const latLng = [lat, lon];
+    latLngs.push(latLng);
+
+    const detailsHtml = (point.details || [])
       .map(
         (item) => `
-          <div class="charging-map-tooltip-row">
-            <div class="charging-map-tooltip-label">${escapeHtml(item?.label || '')}</div>
-            <div class="charging-map-tooltip-value">${escapeHtml(item?.value || '')}</div>
+          <div style="display:grid; grid-template-columns: 92px 1fr; gap: 0.45rem; align-items:start;">
+            <div style="font-weight: 600; color: #cdd7e5;">${escapeHtml(item?.label || '')}</div>
+            <div>${escapeHtml(item?.value || '')}</div>
           </div>
         `,
       )
       .join('');
-    const coordinateLine = `
-      <div class="charging-map-tooltip-row">
-        <div class="charging-map-tooltip-label">Coordinate</div>
-        <div class="charging-map-tooltip-value">${escapeHtml(point.dataset.latitude || '')}, ${escapeHtml(
-          point.dataset.longitude || '',
-        )}</div>
+
+    const popupHtml = `
+      <div style="min-width: 220px; line-height: 1.45;">
+        <div style="font-weight: 700; margin-bottom: 0.6rem; font-size: 0.98rem;">
+          ${escapeHtml(point.title || 'Charging Point')}
+        </div>
+        <div style="display:grid; gap: 0.38rem;">
+          ${detailsHtml}
+          <div style="display:grid; grid-template-columns: 92px 1fr; gap: 0.45rem; align-items:start;">
+            <div style="font-weight: 600; color: #cdd7e5;">Coordinate</div>
+            <div>${escapeHtml(formatCoordinate(lat))}, ${escapeHtml(formatCoordinate(lon))}</div>
+          </div>
+        </div>
       </div>
     `;
-    tooltip.innerHTML = `
-      <div class="charging-map-tooltip-title">${title}</div>
-      <div class="charging-map-tooltip-grid">${details}${coordinateLine}</div>
-    `;
-    tooltip.classList.add('is-visible');
-    tooltip.setAttribute('aria-hidden', 'false');
-    positionTooltip(board, tooltip, event.clientX, event.clientY);
-  };
 
-  points.forEach((point) => {
-    point.addEventListener('mouseenter', (event) => showTooltip(point, event));
-    point.addEventListener('mousemove', (event) => showTooltip(point, event));
-    point.addEventListener('mouseleave', hideTooltip);
-    point.addEventListener('focus', (event) => showTooltip(point, event));
-    point.addEventListener('blur', hideTooltip);
+    const marker = window.L.circleMarker(latLng, {
+      radius: 7,
+      weight: 1.5,
+      color: 'rgba(255,255,255,0.95)',
+      fillColor: 'rgba(114,178,255,0.92)',
+      fillOpacity: 0.96,
+    }).addTo(chargingLeafletMap);
+
+    marker.bindPopup(popupHtml, {
+      closeButton: false,
+      offset: [0, -2],
+    });
+
+    marker.on('mouseover', () => marker.openPopup());
+    marker.on('mouseout', () => marker.closePopup());
+    marker.on('click', () => marker.openPopup());
   });
 
-  board.addEventListener('mouseleave', hideTooltip);
+  if (!latLngs.length) return;
+
+  if (latLngs.length === 1) {
+    chargingLeafletMap.setView(latLngs[0], 16);
+  } else {
+    chargingLeafletMap.fitBounds(latLngs, { padding: [30, 30] });
+  }
+
+  window.setTimeout(() => {
+    if (chargingLeafletMap) chargingLeafletMap.invalidateSize();
+  }, 0);
 }
 
 function renderIntro() {
@@ -1310,6 +1252,10 @@ function renderAccess() {
 
 function renderView(view) {
   revokeExportUrl();
+  if (chargingLeafletMap) {
+    chargingLeafletMap.remove();
+    chargingLeafletMap = null;
+  }
   setActiveMenu(view);
   if (view === 'intro') return renderIntro();
   if (view === 'contracts') return renderContracts();
@@ -1423,6 +1369,10 @@ async function startWorkflow() {
 
 function closeSession() {
   stopPolling();
+  if (chargingLeafletMap) {
+    chargingLeafletMap.remove();
+    chargingLeafletMap = null;
+  }
   currentJobId = null;
   currentJob = null;
   revokeExportUrl();
